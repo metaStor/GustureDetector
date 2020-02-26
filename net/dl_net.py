@@ -120,6 +120,9 @@ class dl_net(object):
                 # 输出tensor => (?, 7*7*(35+2*5))
                 net = slim.fully_connected(net, num_outputs, activation_fn=None, scope='fc_36')
 
+                # 预测开启
+                net = self.interpret_net(net)
+
         return net
 
     # 预测时开启

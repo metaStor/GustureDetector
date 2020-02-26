@@ -12,23 +12,27 @@ OUTPUT_PATH = os.path.join(DATA_PATH, 'output')
 
 WEIGHT_PATH = os.path.join(DATA_PATH, 'weight')
 
-WEIGHT_DIR = os.path.join(OUTPUT_PATH, '2018_12_25_22_15')
+WEIGHT_DIR = os.path.join(OUTPUT_PATH, 'model5')
 
 WEIGHT_FILE = None
 # WEIGHT_FILE = os.path.join(WEIGHT_PATH, 'YOLO_small.ckpt')
-# WEIGHT_FILE = os.path.join(WEIGHT_DIR, 'gusture-3000.meta')
+# WEIGHT_FILE = os.path.join(WEIGHT_DIR, 'gusture-5000.meta')
+
+# 10 classes
+CLASSES = ['zero', 'one', 'two', 'three', 'four', 'five',
+           'six', 'seven', 'eight', 'nine']
 
 # 35 classes
-CLASSES = ['zero', 'one', 'two', 'three', 'four', 'five',
-           'six', 'seven', 'eight', 'nine', 'a', 'b', 'c', 'd',
-           'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p',
-           'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+# CLASSES = ['zero', 'one', 'two', 'three', 'four', 'five',
+#            'six', 'seven', 'eight', 'nine', 'a', 'b', 'c', 'd',
+#            'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p',
+#            'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
 FLIPPED = True  # 水平翻转训练
 
-IMAGE_SIZE = 448
+IMAGE_SIZE = 336
 
-CELL_SIEZ = 7
+CELL_SIEZ = 4
 
 BOXES_PRE_CELL = 2
 
@@ -62,11 +66,11 @@ L2_REGULARIZER = 0.0005
 
 BATCH_SIZE = 16
 
-MAX_ITER = 10000
+MAX_ITER = 100
 
 SUMMARY_ITER = 10
 
-SAVE_ITER = 2000
+SAVE_ITER = 50
 
 # decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 DECAY_RATE = 0.1  # 衰减系数

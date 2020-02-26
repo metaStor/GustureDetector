@@ -5,9 +5,10 @@ import config as cfg
 class get_txt(object):
 
     def __init__(self):
-        self.path = cfg.IMAGES_PATH
+        # self.path = cfg.IMAGES_PATH
+        self.path = r'/media/meta/Work/Study_and_Work/毕业论文/gusture/DATA'
         self.output = os.path.join(cfg.DATA_PATH, 'ImageSets', 'Main')
-        self.count = 0
+        self.count = 2945
         self.bit = 6
 
     '''
@@ -30,7 +31,7 @@ class get_txt(object):
                  if os.path.isdir(os.path.join(self.path, x))]
         if not os.path.exists(self.output):
             os.makedirs(self.output)
-            print('Create ', str(self.output))
+            print('Create %s' % self.output)
         with open(os.path.join(self.output, 'trainval.txt'), 'a+') as f:
             for folder in files:
                 for file in sorted(os.listdir(folder)):
@@ -42,8 +43,10 @@ class get_txt(object):
                     os.rename(old, new)
                     # write to trainval.txt
                     f.write(str(add) + str(self.count) + '\n')
+                    print('Processing %s image' % self.count)
                     self.count += 1
-            print(self.count)
+        print('Done! Summary: %s' % self.count)
 
 
-get_txt().get_filename()
+if __name__ == '__main__':
+    get_txt().rename_and_get_filename()

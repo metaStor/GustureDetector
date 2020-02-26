@@ -15,6 +15,7 @@ class Identify(object):
         # self.weight = weight
         # self.weight_dir = cfg.WEIGHT_DIR
         self.weight_dir = weight
+        self.weight_file = cfg.WEIGHT_FILE
 
         self.classes = cfg.CLASSES
         self.num_class = len(self.classes)
@@ -32,7 +33,11 @@ class Identify(object):
         print('Restoring weight from: ' + self.weight_dir)
         # self.saver = tf.train.import_meta_graph(self.weight)
         self.saver = tf.train.Saver()
+        # 恢复所有变量
+        # 自动获取checkout中的最新模型
         self.saver.restore(self.sess, tf.train.latest_checkpoint(self.weight_dir))
+        # ckpt = tf.train.get_checkpoint_state(self.weight_file)
+        # self.saver.restore(self.sess, ckpt.model_checkpoint_path)
 
     def image_identify(self, image_name, wait=0):
         # print(tf.get_default_graph().get_tensor_by_name('variables:0'))
@@ -193,12 +198,12 @@ class Identify(object):
     # ----------------------------------
 
     def process_predicts1(self, predicts):
-        p_classes = predicts[0, :, :, 0:20]
-        C = predicts[0, :, :, 20:22]
-        coordinate = predicts[0, :, :, 22:]
+        p_classes = predicts[0, :, :, 0:self.num_class]
+        C = predicts[0, :, :, self.num_class:self.num_class + 2]
+        coordinate = predicts[0, :, :, self.num_class + 2:]
 
-        p_classes = np.reshape(p_classes, (7, 7, 1, 20))
-        C = np.reshape(C, (7, 7, 2, 1))
+        p_classes = np.reshape(p_classes, (self.cell_size, self.cell_size, 1, self.num_class))
+        C = np.reshape(C, (self.cell_size, self.cell_size, 2, 1))
         P = C * p_classes
         # print P[5,1, 0, :]
 
@@ -207,7 +212,7 @@ class Identify(object):
 
         class_num = index[3]
 
-        coordinate = np.reshape(coordinate, (7, 7, 2, 4))
+        coordinate = np.reshape(coordinate, (self.cell_size, self.cell_size, 2, 4))
         max_coordinate = coordinate[index[0], index[1], index[2], :]
 
         xcenter = max_coordinate[0]
@@ -215,8 +220,8 @@ class Identify(object):
         w = max_coordinate[2]
         h = max_coordinate[3]
 
-        xcenter = (index[1] + xcenter) * (448 / 7.0)
-        ycenter = (index[0] + ycenter) * (448 / 7.0)
+        xcenter = (index[1] + xcenter) * (self.image_size / float(self.cell_size))
+        ycenter = (index[0] + ycenter) * (self.image_size / float(self.cell_size))
 
         w = w * 448
         h = h * 448
@@ -228,21 +233,6 @@ class Identify(object):
         ymax = ymin + h
 
         return xmin, ymin, xmax, ymax, class_num
-
-    def draw_result(self, img, result):
-        for i in range(len(result)):
-            x = int(result[i][1])
-            y = int(result[i][2])
-            w = int(result[i][3] / 2)
-            h = int(result[i][4] / 2)
-            cv2.rectangle(img, (x - w, y - h), (x + w, y + h), (0, 255, 0), 2)
-            cv2.rectangle(img, (x - w, y - h - 20),
-                          (x + w, y - h), (125, 125, 125), -1)
-            lineType = cv2.LINE_AA if cv2.__version__ > '3' else cv2.CV_AA
-            cv2.putText(
-                img, result[i][0] + ' : %.2f' % result[i][5],
-                (x - w + 5, y - h - 7), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                (0, 0, 0), 1, lineType)
 
     def detect_test(self, img, wait=0):
         img = cv2.imread(img)
@@ -273,11 +263,11 @@ class Identify(object):
         Return:
             predicts_dict: {"cat": [[x1, y1, x2, y2, scores1], [...]]}.
         """
-        p_classes = predicts[0, :, :, 0:20]  # 20 classes.
-        C = predicts[0, :, :, 20:22]  # two bounding boxes in one cell.
-        coordinate = predicts[0, :, :, 22:]  # all bounding boxes position.
+        p_classes = predicts[0, :, :, 0:self.num_class]  # 35 classes.
+        C = predicts[0, :, :, self.num_class: self.num_class + 2]  # two bounding boxes in one cell.
+        coordinate = predicts[0, :, :, self.num_class + 2:]  # all bounding boxes position.
 
-        p_classes = np.reshape(p_classes, (7, 7, 1, 20))
+        p_classes = np.reshape(p_classes, (7, 7, 1, self.num_class))
         C = np.reshape(C, (7, 7, 2, 1))
 
         P = C * p_classes  # confidencefor all classes of all bounding boxes (cell_size, cell_size, bounding_box_num, class_num) = (7, 7, 2, 1).
@@ -420,15 +410,15 @@ def main():
 
     identify = Identify(net=net, weight=weight)
 
-    image = cfg.IMAGES_PATH + '/000119.jpg'
-    identify.image_identify(image)
+    # image = cfg.IMAGES_PATH + '/000150.jpg'
+    image = r'./temp/4.jpg'
+    # identify.image_identify(image)
     # -----------------------
     # detect from image file
     # imname = os.path.join(cfg.PASCAL_PATH, 'VOCdevkit', 'VOC2007+2012', 'JPEGImages', '000005.jpg')
-    imname = './test/person.jpg'
-    # detector.detect_test(imname, 5000)
-    identify.detect_non_max(imname, 5000)
-    # detector.image_detector(imname, 5000)
+    identify.detect_test(image, 5000)
+    # identify.detect_non_max(image, 5000)
+    # identify.image_detector(image, 5000)
 
 
 if __name__ == '__main__':

@@ -64,6 +64,7 @@ class Solver(object):
         config = tf.ConfigProto(
             # device_count={'gpu': 0},  # 使用第一块GPU
             gpu_options=gpu_options)
+        config.gpu_options.allow_growth = True  # 需要多少用多少
         self.sess = tf.Session(config=config)
         self.sess.run(tf.global_variables_initializer())
 

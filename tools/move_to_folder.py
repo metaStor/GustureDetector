@@ -6,9 +6,9 @@ import config as cfg
 将当前目录下的所有文件夹中的文件复制到当前文件
 '''
 
-source = cfg.ANNOTATIONS
+source = r'/media/meta/Work/Study_and_Work/毕业论文/gusture/DATA'
 
-target = cfg.ANNOTATIONS
+target = r'/media/meta/Work/Study_and_Work/毕业论文/gusture/DATA'
 
 count = 0
 
