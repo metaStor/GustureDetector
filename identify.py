@@ -199,11 +199,11 @@ class Identify(object):
 
     def process_predicts1(self, predicts):
         p_classes = predicts[0, :, :, 0:self.num_class]
-        C = predicts[0, :, :, self.num_class:self.num_class + 2]
-        coordinate = predicts[0, :, :, self.num_class + 2:]
+        C = predicts[0, :, :, self.num_class:self.num_class + self.boxes_predict_cell]
+        coordinate = predicts[0, :, :, self.num_class + self.boxes_predict_cell:]
 
         p_classes = np.reshape(p_classes, (self.cell_size, self.cell_size, 1, self.num_class))
-        C = np.reshape(C, (self.cell_size, self.cell_size, 2, 1))
+        C = np.reshape(C, (self.cell_size, self.cell_size, self.boxes_predict_cell, 1))
         P = C * p_classes
         # print P[5,1, 0, :]
 
@@ -212,7 +212,7 @@ class Identify(object):
 
         class_num = index[3]
 
-        coordinate = np.reshape(coordinate, (self.cell_size, self.cell_size, 2, 4))
+        coordinate = np.reshape(coordinate, (self.cell_size, self.cell_size, self.boxes_predict_cell, 4))
         max_coordinate = coordinate[index[0], index[1], index[2], :]
 
         xcenter = max_coordinate[0]
@@ -223,8 +223,8 @@ class Identify(object):
         xcenter = (index[1] + xcenter) * (self.image_size / float(self.cell_size))
         ycenter = (index[0] + ycenter) * (self.image_size / float(self.cell_size))
 
-        w = w * 448
-        h = h * 448
+        w = w * self.image_size
+        h = h * self.image_size
 
         xmin = xcenter - w / 2.0
         ymin = ycenter - h / 2.0
@@ -411,7 +411,7 @@ def main():
     identify = Identify(net=net, weight=weight)
 
     # image = cfg.IMAGES_PATH + '/000150.jpg'
-    image = r'./temp/4.jpg'
+    image = r'./temp/1.jpg'
     # identify.image_identify(image)
     # -----------------------
     # detect from image file

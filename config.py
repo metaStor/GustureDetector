@@ -1,6 +1,6 @@
 import os
 
-DATA_PATH = '/media/meta/Work/Study_and_Work/毕业论文/GustureDetector/dataSet'
+DATA_PATH = '/media/meta/Work/Study_and_Work/Graduation/GustureDetector/dataSet'
 
 ANNOTATIONS = os.path.join(DATA_PATH, 'Annotations')
 
@@ -12,7 +12,7 @@ OUTPUT_PATH = os.path.join(DATA_PATH, 'output')
 
 WEIGHT_PATH = os.path.join(DATA_PATH, 'weight')
 
-WEIGHT_DIR = os.path.join(OUTPUT_PATH, 'model5')
+WEIGHT_DIR = os.path.join(OUTPUT_PATH, 'model1')
 
 WEIGHT_FILE = None
 # WEIGHT_FILE = os.path.join(WEIGHT_PATH, 'YOLO_small.ckpt')
@@ -30,9 +30,9 @@ CLASSES = ['zero', 'one', 'two', 'three', 'four', 'five',
 
 FLIPPED = True  # 水平翻转训练
 
-IMAGE_SIZE = 336
+IMAGE_SIZE = 448
 
-CELL_SIEZ = 4
+CELL_SIEZ = 5
 
 BOXES_PRE_CELL = 2
 
@@ -48,9 +48,9 @@ ALPHA = 0.1
 '''
 OBJECT_SCALE = 1.0  # iou分类误差
 
-NOOBJECT_SCALE = 0.5
+NOOBJECT_SCALE = 1.0
 
-CLASS_SCALE = 1.0
+CLASS_SCALE = 2.0
 
 COORD_SCALE = 5.0  # 增加坐标误差权重比例（更重视坐标预测）
 
